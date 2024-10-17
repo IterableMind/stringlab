@@ -19,6 +19,7 @@ class Text(str):
         if not isinstance(s, (str, tuple)):
             raise TypeError('endswith()1 first arg must be str '
                 f'or a tuple of str, not \'{s.__class__.__name__}\'')
+            
         if isinstance(s, tuple) and not \
             all((isinstance(item, str) for item in s)):
             raise TypeError(f'tuple for endswith must only contain str')
@@ -42,8 +43,6 @@ class Text(str):
                 return s == self[substrlen:]
             newsubstr = self[start:end]
             return s == newsubstr[substrlen:]
-
-        return False
 
 
 
