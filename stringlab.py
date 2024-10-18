@@ -6,7 +6,33 @@ N/B Python's original str methods are faster and are optimized and
 should be considered first.
 """
 
+def _is_ascii_upper(c):
+    return 'A' <= c <= 'Z'
+
+
 class Text(str):
+    """
+    Extend and overwrite common methods present
+    in str class.
+    """
+    def upper(self):
+        """Overwrite the original upper().
+            This method only handles ASCII characters, not Unicode.
+        """
+
+        if all(_is_ascii_upper(c) for c in self):
+            return self # all chars already in upper
+
+        uppercased_chars = []
+        for c in self:
+            if 'a' <= c <= 'z':
+                uppercased_chars.append(chr(ord(c) - 32))
+            else:
+                uppercased_chars.append(c)
+
+        return ''.join(uppercased_chars)
+
+
     def endswith(self, s, *args):
         # Overwrite the default str.endswith()
 
@@ -19,7 +45,6 @@ class Text(str):
         if not isinstance(s, (str, tuple)):
             raise TypeError('endswith()1 first arg must be str '
                 f'or a tuple of str, not \'{s.__class__.__name__}\'')
-            
         if isinstance(s, tuple) and not \
             all((isinstance(item, str) for item in s)):
             raise TypeError(f'tuple for endswith must only contain str')
@@ -46,6 +71,7 @@ class Text(str):
 
 
 
+
 if __name__ == '__main__':
     # simple tests
     s = Text('Hello world again')
@@ -54,3 +80,6 @@ if __name__ == '__main__':
     assert s.endswith(('world', 'python')) == False
     assert s.endswith(('world', 'in', 'python')) == True
     assert s.endswith(('world', 'in', 'lo'), 1, 5) == True
+
+    x = Text('@jared')
+    print(x.upper())
