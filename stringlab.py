@@ -9,6 +9,9 @@ should be considered first.
 def _is_ascii_upper(c):
     return 'A' <= c <= 'Z'
 
+def _is_ascii_lower(c):
+    return 'a' <= c <= 'z'
+
 
 class Text(str):
     """
@@ -21,17 +24,35 @@ class Text(str):
         """
 
         if all(_is_ascii_upper(c) for c in self):
-            return self # all chars already in upper
+            # all characters are already uppercase.
+            return self
 
         uppercased_chars = []
         for c in self:
-            if 'a' <= c <= 'z':
+            if _is_ascii_lower(c):
                 uppercased_chars.append(chr(ord(c) - 32))
             else:
                 uppercased_chars.append(c)
 
         return ''.join(uppercased_chars)
 
+    def lower(self):
+        """Overwrite the original lower().
+            This method only handles ASCII characters, not Unicode.
+        """
+        if all(_is_ascii_lower(c) for c in self):
+            # all characters are already lowercase
+            return self
+
+        lowercased_chars = []
+        for c in self:
+            if _is_ascii_upper(c):
+                lowercased_chars.append(chr(ord(c) + 32))
+            else:
+                lowercased_chars.append(c)
+        return ''.join(lowercased_chars)
+
+        
 
     def endswith(self, s, *args):
         # Overwrite the default str.endswith()
@@ -71,15 +92,14 @@ class Text(str):
 
 
 
-
 if __name__ == '__main__':
     # simple tests
+    print('Running tests...')
     s = Text('Hello world again')
     assert s.endswith('again') == True
     assert s.endswith('ld', 0, 11) == True
     assert s.endswith(('world', 'python')) == False
     assert s.endswith(('world', 'in', 'python')) == True
     assert s.endswith(('world', 'in', 'lo'), 1, 5) == True
-
-    x = Text('@jared')
-    print(x.upper())
+    assert Text('@jared').upper() == '@JARED'
+    assert Text('#oYaRo').lower() == '#oyaro'
